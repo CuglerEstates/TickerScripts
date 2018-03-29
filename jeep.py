@@ -1,41 +1,30 @@
-#spline hill climb algo
+#spline derivative returns
 
-#import pymongo 
 import numpy as np
-import datetime
 from scipy.interpolate import UnivariateSpline as US
 from scipy.interpolate import splder
-import matplotlib.pyplot as plt
-import math as m
-#database config settings 
-#connection = pymongo.MongoClient('localhost:27017')
-#db = connection.StockMarketDB
-#col = db.hourlyStatistics #this is where you select the table (to be redone)
-#
-#prices = []
-#time = []
-prices = np.loadtxt('prices',delimiter = ',') 
 
-#for doc in col.find().sort('date', pymongo.ASCENDING):
-#    prices.append(doc['low'])
-#    time.append(doc['date'])
-#
-#xaxis = np.linspace(0,len(time),len(time))
-xaxis = np.linspace(0,70,70)
+def hill (prices, xaxis):
+    
+    spl = US(xaxis, prices, k = 3, s = 5)
+    spl_der = spl.derivative() 
+    av_der = np.sum(spl_der(xaxis))/len(spl_der(xaxis))
+    return av_der
 
-spl = US(xaxis, prices, k = 3, s = 5)
-spl_der = spl.derivative()
+def jeep(file_list, ticker_array):
+    #file_list is a string array
+    #ticker_array is a list of pandas dataframes
 
+    count = 0
+    gather_results = {}
 
-av_der = np.sum(spl_der(xaxis))/len(spl_der(xaxis))
-print(av_der)
-
-
-plt.plot(xaxis,spl_der(xaxis)+92,'y',xaxis,spl(xaxis),'b',xaxis,prices,'ro')
-#plt.plot(xaxis,spl_der(xaxis)+99)
-plt.show()
-
-#Useful loop for debugging
-#for i in range(1,len(prices)):
-#   print(prices[i])
-#   print(timep[i])
+    for i in ticker_array:
+        print(np.linspace(0,len(i)-1,len(i)))
+        if len(i) ==150:
+            av_der = hill(i['3'],np.linspace(0,len(i)-1,len(i)))
+            gather_results[file_list[count]] = av_der
+        count += 1
+        continue  
+    results = [(k, d[k]) for k in sorted(gather_results, key = gather_results \
+        , reverse = 1)]
+    

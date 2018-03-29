@@ -2,17 +2,39 @@
 # it is the 'bookie'
 
 #proper python modules used by other functions, one time load
+import os
+import pandas
 import pymongo
 import datetime
+import tailer
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
 
-#scripts we have written
-import hill
+#algos we have written
+from jeep import jeep
 
 #mode to run the script in (options are 'test' and 'running')
-mode = 'test'
+mode = 'set'
+
+
+
+if mode == 'set':
+    
+    #PURPOSE: this provides 150 test points of data. 
+    #VAR: file_list is the list of files stored as string names, so it can be reused
+    #           as a list of ticker names in the same order as ticker_array
+    #VAR: ticker_array holds the CSV data of a ticker
+
+    os.chdir('/home/stefan/Stocks/TickerScripts/refinedstock/')
+    file_list = os.listdir()
+    ticker_array = []  
+
+    for i in file_list: 
+        holder = pandas.read_csv(i).tail(150)
+        ticker_array.append(holder) 
+        
+
 
 if mode == 'test':
     prices = np.loadtxt('prices',delimiter = ',')
@@ -33,8 +55,7 @@ if mode == 'running':
         time.append(doc['date'])
         xaxis = np.linspace(0,len(time),len(time))
 
-#run functions
-av_der= hill.hill(prices, xaxis) 
 
-#display results
-print(av_der)
+#run library of functions
+jeep = jeep(file_list,ticker_array)
+print(jeep)
