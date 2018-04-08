@@ -1,15 +1,21 @@
 #spline derivative returns
 
+import matplotlib.pyplot as py
 import numpy as np
+import pandas as pd
 from scipy.interpolate import UnivariateSpline as US
 from scipy.interpolate import splder
+from collections import OrderedDict as OD
+from itertools import islice
+
 
 def hill (prices, xaxis):
     
-    spl = US(xaxis, prices, k = 3, s = 5)
+    spl = US(xaxis, prices, k = 5, s = 5)
     spl_der = spl.derivative() 
     av_der = np.sum(spl_der(xaxis))/len(spl_der(xaxis))
-    return av_der
+    
+    return av_der 
 
 def jeep(file_list, ticker_array):
     #file_list is a string array
@@ -17,14 +23,24 @@ def jeep(file_list, ticker_array):
 
     count = 0
     gather_results = {}
-
+    results = []
     for i in ticker_array:
-        print(np.linspace(0,len(i)-1,len(i)))
         if len(i) ==150:
             av_der = hill(i['3'],np.linspace(0,len(i)-1,len(i)))
             gather_results[file_list[count]] = av_der
-        count += 1
+        count += 1 
         continue  
-    results = [(k, d[k]) for k in sorted(gather_results, key = gather_results \
-        , reverse = 1)]
+    
+    #massaging results into a portfolio format
+    results = OD(sorted(gather_results.items(), key=lambda t: t[1], reverse = True)) #sorting dict
+    result_top20  = list(islice(results.items(), 0, 20))# ripping the top 20 off
+    result = pd.DataFrame.from_dict(result_top20) 
+    x = 0
+    divisor = result[1][0] 
+    
+    while x<=19:
+       result[1][x] = result[1][x]/divisor
+       x+=1 
+
+    return result
     

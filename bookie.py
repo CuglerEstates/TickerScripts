@@ -4,9 +4,9 @@
 #proper python modules used by other functions, one time load
 import os
 import pandas
-import pymongo
+#import pymongo
 import datetime
-import tailer
+#import tailer
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -49,7 +49,7 @@ if mode == 'running':
     
     prices = []
     time = []
-
+    #the block below is shit. 
     for doc in col.find().sort('date', pymongo.ASCENDING):
         prices.append(doc['low'])
         time.append(doc['date'])
@@ -57,5 +57,6 @@ if mode == 'running':
 
 
 #run library of functions
-jeep = jeep(file_list,ticker_array)
-print(jeep)
+jeepp = jeep(file_list,ticker_array)
+
+print(jeepp)
